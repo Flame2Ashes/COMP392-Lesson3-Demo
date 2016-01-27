@@ -26,6 +26,7 @@ import Color = THREE.Color;
 import Vector3 = THREE.Vector3;
 import Face3 = THREE.Face3;
 import Point = objects.Point;
+import CScreen = config.Screen;
 
 //Custom Game Objects
 import gameObject = objects.gameObject;
@@ -96,6 +97,8 @@ function init() {
     
     // add controls
     gui = new GUI();
+    control = new Control(0.05);
+    addControl(control);
 
     // Add framerate stats
     addStatsObject();
@@ -108,12 +111,15 @@ function init() {
 }
 
 function onResize(): void {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = CScreen.RATIO;
+   //camera.aspect = window.innerWidth / window.innerHeight; 
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(CScreen.WIDTH,CScreen.HEIGHT);
 }
 
-
+function addControl(controlObject: Control): void {
+    gui.add(controlObject, 'rotationSpeed',-0.5,0.5);
+}
 
 function addStatsObject() {
     stats = new Stats();
@@ -127,6 +133,8 @@ function addStatsObject() {
 // Setup main game loop
 function gameLoop(): void {
     stats.update();
+    
+    cube.rotation.y += control.rotationSpeed;
 
     // render using requestAnimationFrame
     requestAnimationFrame(gameLoop);
@@ -139,14 +147,16 @@ function gameLoop(): void {
 function setupRenderer(): void {
     renderer = new Renderer();
     renderer.setClearColor(0xEEEEEE, 1.0);
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(CScreen.WIDTH,CScreen.HEIGHT);
+    //renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     console.log("Finished setting up Renderer...");
 }
 
 // Setup main camera for the scene
 function setupCamera(): void {
-    camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera = new PerspectiveCamera(45, CScreen.RATIO, 0.1, 1000);
+    //camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.x = -20;
     camera.position.y = 25;
     camera.position.z = -20.5;
